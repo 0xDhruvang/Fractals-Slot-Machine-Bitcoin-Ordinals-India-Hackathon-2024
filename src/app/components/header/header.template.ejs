@@ -1,0 +1,79 @@
+<header class="header__base">
+    <div class="header__content">
+        <h1 class="header__title">
+            <a class="header__logoLink" href="https://danziger.github.io/slotjs/">
+                <img class="header__logoImage" src="logo/slotjs-t-e-64.png" aria-hidden="true" />
+                <span class="header__logoText" id="title">Slot Machine</span>
+            </a>
+        </h1>
+        <ul class="header__state">
+            <li class="header__prop" title="Coins">
+                <span class="header__icon" role="img" aria-label="Coins">💲</span>
+                <span class="header__value" id="coins">00000</span>
+            </li>
+            <li class="header__prop" title="Jackpot">
+                <span class="header__icon" role="img" aria-label="Jackpot">💎</span>
+                <span class="header__value" id="jackpot">00000</span>
+            </li>
+            <li class="header__prop" title="Spins">
+                <span class="header__icon" role="img" aria-label="Spins">🎲</span>
+                <span class="header__value" id="spins">00000</span>
+            </li>
+        </ul>
+        <!-- Wallet Connect Button -->
+        <button class="header__walletButton" id="connectWalletBtn">
+            Connect Unisat Wallet
+        </button>
+        <p id="walletAddress" style="display: none;"></p> <!-- To display the address -->
+    </div>
+</header>
+
+<script>
+    // Function to handle account changes and display the address
+    const handleAccountsChanged = (accounts) => {
+        if (accounts.length > 0) {
+            const address = accounts[0];
+            document.getElementById("walletAddress").style.display = "block";
+            document.getElementById("walletAddress").textContent = `Connected Wallet: ${address}`;
+            document.getElementById("connectWalletBtn").textContent = "Wallet Connected";
+        }
+    };
+
+    // Check if Unisat wallet is installed
+    const checkUnisat = async () => {
+        const unisat = window.unisat;
+
+        if (!unisat) {
+            alert("Unisat Wallet is not installed.");
+            return;
+        }
+
+        // Check if the wallet is already connected
+        try {
+            const accounts = await unisat.getAccounts();
+            handleAccountsChanged(accounts);
+        } catch (e) {
+            console.error("Error fetching accounts:", e);
+        }
+    };
+
+    // Connect wallet on button click
+    document.getElementById("connectWalletBtn").addEventListener("click", async () => {
+        const unisat = window.unisat;
+
+        if (!unisat) {
+            alert("Unisat Wallet is not installed.");
+            return;
+        }
+
+        try {
+            const accounts = await unisat.requestAccounts();
+            handleAccountsChanged(accounts);
+        } catch (e) {
+            console.error("Error connecting wallet:", e);
+        }
+    });
+
+    // Run the check when the page loads
+    window.addEventListener("load", checkUnisat);
+</script>
